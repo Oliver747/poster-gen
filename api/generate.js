@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { createCanvas, loadImage } from "canvas";
 
 function drawRoundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -18,25 +17,28 @@ function drawRoundRect(ctx, x, y, w, h, r) {
 export default async function handler(req, res) {
   const { url } = req.query;
 
-  if (!url) return res.status(400).send("Missing URL");
+  const screenshot = `https://api.site-shot.com/?url=${encodeURIComponent(
+    url
+  )}&width=1024&height=768`;
 
-  try {
-    const screenshot = `https://api.site-shot.com/?url=${encodeURIComponent(url)}&width=1024&height=768`;
+  const client = new OpenAI({
+    apiKey: process.env.QWEN_API_KEY,
+    baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  });
 
-    const client = new OpenAI({
-      apiKey: process.env.QWEN_API_KEY,
-      baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    });
+  const completion = await client.chat.completions.create({
+    model: "qwen-plus",
+    messages: [{
+      role: "user",
+      content: `写3个标题+文案+标签，网站：${url}`
+    }]
+  });
 
-    const completion = await client.chat.completions.create({
-      model: "qwen-plus",
-      messages: [{ role: "user", content: `写3个标题+文案+标签，网站：${url}` }]
-    });
-
-    const content = completion.choices[0].message.content;
-
-    const canvas = createCanvas(1080, 1440);
-    const ctx = canvas.getContext("2d");
+  res.json({
+    screenshot,
+    content: completion.choices[0].message.content
+  });
+}
 
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, 1080, 1440);
