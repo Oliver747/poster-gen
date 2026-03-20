@@ -1,5 +1,17 @@
+npm install html-to-image
 import { useState } from "react";
+import { toPng } from "html-to-image";
+import { useRef } from "react";
 
+const ref = useRef();
+
+const download = async () => {
+  const dataUrl = await toPng(ref.current);
+  const link = document.createElement("a");
+  link.download = "poster.png";
+  link.href = dataUrl;
+  link.click();
+};
 export default function App() {
   const [url, setUrl] = useState("");
   const [data, setData] = useState(null);
@@ -11,21 +23,16 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: 40, color: "#fff", background: "#000", minHeight: "100vh" }}>
-      <h1>海报生成器</h1>
-
-      <input value={url} onChange={e => setUrl(e.target.value)} />
-      <button onClick={handle}>生成</button>
-
-      {data && (
-        <>
-          <img src={data.poster} style={{ width: 300 }} />
-          <pre>{data.content}</pre>
-          <button onClick={() => navigator.clipboard.writeText(data.content)}>
-            复制文案
-          </button>
-        </>
-      )}
-    </div>
+   <div ref={ref} style={{
+  width: 300,
+  background: "#000",
+  padding: 20,
+  borderRadius: 20
+}}>
+  <img src={data.screenshot} style={{
+    width: "100%",
+    borderRadius: 20
+  }} />
+</div>
   );
 }
