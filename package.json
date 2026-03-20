@@ -1,0 +1,16 @@
+{
+  "name": "poster-gen",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "openai": "^4.0.0",
+    "canvas": "^2.11.2"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.0.0"
+  }
+}
